@@ -1,7 +1,5 @@
 # Ejercicios de Flex & Bison
 
-Este repositorio contiene la solución a los **ejercicios 3 y 4** de un taller de 5 ejercicios basado en el libro *flex & bison* (O'Reilly). Ambos ejercicios parten del mismo escáner de tokens (operadores aritméticos, números y el símbolo `|`) conectado a un parser de Bison, cada uno con una variante distinta de tipos de datos y de salida.
-
 ## Organización del proyecto
 
 ```
