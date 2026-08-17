@@ -44,13 +44,13 @@ cd Ejercicios_Flex
 **2. Entrar a la carpeta del ejercicio**
 
 ```bash
-cd ejercicio_3     # o ejercicio_4
+cd ejercicio_3     # o ejercicio_(el numero del ejerccio)
 ```
 
 **3. Dar permisos de ejecución al script**
 
 ```bash
-chmod +x ejecutar_3.sh     # ejecutar_4.sh en el otro caso
+chmod +x ejecutar_3.sh     # ejecutar_(el numero del ejerccio).sh
 ```
 
 Esto hace falta porque algunos métodos de descarga (por ejemplo bajar el repo como ZIP en vez de clonarlo) no conservan el permiso de ejecución del archivo.
