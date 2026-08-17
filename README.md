@@ -17,7 +17,7 @@ Ejercicios_Flex/
 
 Cada carpeta es independiente: trae su propio `flex.l`, `bison.y` y script de compilación, así que se pueden compilar y correr por separado.
 
-> Al ejecutar `ejecutar_3.sh` / `ejecutar_4.sh` se generan automáticamente dentro de cada carpeta los archivos `bison.tab.c`, `bison.tab.h`, `lex.yy.c` y el ejecutable (`ejercicio_3` / `ejercicio_4`). Esos archivos los crea el compilador, no son código fuente escrito a mano — si quieres mantener el repo limpio, considera agregarlos a un `.gitignore`.
+> Al ejecutar `ejecutar_(el numero del ejerccio)sh` se generan automáticamente dentro de cada carpeta los archivos `bison.tab.c`, `bison.tab.h`, `lex.yy.c` y el ejecutable (`ejercicio_(el numero del ejerccio)`). Esos archivos los crea el compilador.
 
 ## Requisitos
 
