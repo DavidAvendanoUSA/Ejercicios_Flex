@@ -315,11 +315,3 @@ Mystery character @
 
 ---
 
-## Agregar este README al repo
-
-```bash
-# desde la raíz del repo, con este archivo ya copiado ahí
-git add README.md
-git commit -m "Agregar README con organizacion del proyecto y explicacion de ejercicios 3 y 4"
-git push
-```
