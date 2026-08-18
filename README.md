@@ -146,7 +146,7 @@ Es decir: 2 líneas, 12 palabras y 63 caracteres — correspondiente al ejemplo 
 | clever       | smart     |
 | smart        | elegant   |
 | conservative | liberal   |
-|--------------|-----------|
+
 Cualquier otro carácter que no coincida con estas palabras se imprime tal cual, sin modificaciones.
 
 **Compilar**
