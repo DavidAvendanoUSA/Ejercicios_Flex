@@ -439,7 +439,7 @@ gcc fb1-5.tab.c lex.yy.c -o calc -lfl
 - Salida: *= 19*
 El cálculo respeta la precedencia esperada: *(1⋅2) + (3⋅4) + 5 = 2 + 12 + 5 = 19.*
 
-<img width="304" height="92" alt="Screenshot 2026-08-17 213111" src="https://github.com/user-attachments/assets/99a82669-17e8-4e94-bc35-a0e68c4ed92e" />
+<img width="504" height="202" alt="Screenshot 2026-08-17 213111" src="https://github.com/user-attachments/assets/99a82669-17e8-4e94-bc35-a0e68c4ed92e" />
 
 ---
 
