@@ -6,14 +6,14 @@
 Ejercicios_Flex/
 
 ├── ejercicio_1/
-│   ├── flex.l
-│   ├── bison.y
-│   └── ejecutar_3.sh
+│   ├── fb1-1
+│   ├── fb1-1.l
+│   └── lex.yy.c
 |
 ├── ejercicio_2/
-│   ├── flex.l
-│   ├── bison.y
-│   └── ejecutar_3.sh
+│   ├── fb1-2
+│   ├── fb1-2.l
+│   └── lex.yy.c
 |
 ├── ejercicio_3/
 │   ├── flex.l          → analizador léxico (escáner)
@@ -96,6 +96,85 @@ El programa lee de **entrada estándar**, así que después de ejecutarlo puedes
 - escribir una línea a mano y presionar `Enter` (`Ctrl+D` para terminar), o
 - redirigir un archivo: `./ejercicio_3 < entrada.txt`, o
 - usar un pipe: `echo "3 + 4 * |2|" | ./ejercicio_3`
+
+---
+
+## Ejercicio 1
+
+*fb1-1.l* es el archivo fuente de Flex correspondiente al Example 1-1. Contiene las reglas necesarias para contar líneas, palabras y caracteres de la entrada, siguiendo la estructura clásica de Flex en tres secciones separadas por *%%*: declaraciones, reglas y código C.
+
+**Compilar**
+Flex primero traduce el archivo *.l* a un programa en C:
+```c
+flex fb1-1.l
+```
+Esto genera *lex.yy.c*, el archivo C que Flex crea automáticamente a partir de las reglas definidas en *fb1-1.l*. Al ser generado, no hace falta escribirlo a mano.
+Luego se compila con GCC (o *cc*, que funciona igual):
+```c
+gcc lex.yy.c -o fb1-1 -lfl
+```
+El parámetro *-lfl* enlaza la biblioteca de Flex, necesaria porque *lex.yy.c* usa funciones internas de esa librería.
+Esto produce el ejecutable *fb1-1*.
+
+**Ejecutar**
+```c
+./fb1-1
+```
+Se introduce, por ejemplo:
+```c
+The boy stood on the burning deck shelling peanuts by the peck
+```
+Para finalizar la entrada: *Ctrl + D*.
+
+**Resultado esperado**
+```c
+       2      12      63
+```
+Es decir: 2 líneas, 12 palabras y 63 caracteres — correspondiente al ejemplo mostrado en el documento.
+
+---
+
+## Ejercicio 2
+
+*fb1-2.l* es el archivo fuente de Flex correspondiente al *Example 1-2*. Contiene reglas que reemplazan ciertas palabras del inglés británico por su equivalente en inglés americano:
+| Original     | Reemplazo |
+|--------------|-----------|
+| colour       | color     |
+| flavour      | flavor    |
+| clever       | smart     |
+| smart        | elegant   |
+| conservative | liberal   |
+Cualquier otro carácter que no coincida con estas palabras se imprime tal cual, sin modificaciones.
+
+**Compilar**
+```c
+flex fb1-2.l
+gcc lex.yy.c -o fb1-2 -lfl
+```
+Igual que en el ejemplo anterior, *flex fb1-2.l* genera *lex.yy.c*, y *-lfl* enlaza la biblioteca de Flex.
+
+**Ejecutar**
+```c
+./fb1-2
+```
+
+**Resultado esperado**
+Se introduce, por ejemplo:
+```c
+The colour of the car is beautiful.
+```
+El programa produce:
+```c
+The color of the car is beautiful.
+```
+Otro ejemplo, introduciendo:
+```c
+The flavour is clever.
+```
+Produce:
+```c
+The flavor is smart.
+```
 
 ---
 
