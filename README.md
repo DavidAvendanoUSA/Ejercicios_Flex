@@ -131,6 +131,8 @@ Para finalizar la entrada: *Ctrl + D*.
        2      12      63
 ```
 Es decir: 2 líneas, 12 palabras y 63 caracteres — correspondiente al ejemplo mostrado en el documento.
+<img width="284" height="207" alt="Montaje 1-1 2" src="https://github.com/user-attachments/assets/89a99dee-ad01-4195-92a5-f7beb29c029f" />
+
 
 ---
 
@@ -175,6 +177,8 @@ Produce:
 ```c
 The flavor is smart.
 ```
+<img width="317" height="289" alt="Montaje 1-2" src="https://github.com/user-attachments/assets/bc0b085b-8a7e-41b2-8a7f-717a9864292e" />
+
 
 ---
 
