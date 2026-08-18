@@ -4,15 +4,33 @@
 
 ```
 Ejercicios_Flex/
+
+├── ejercicio_1/
+│   ├── flex.l
+│   ├── bison.y
+│   └── ejecutar_3.sh
+|
+├── ejercicio_2/
+│   ├── flex.l
+│   ├── bison.y
+│   └── ejecutar_3.sh
+|
 ├── ejercicio_3/
 │   ├── flex.l          → analizador léxico (escáner)
 │   ├── bison.y          → gramática / parser
 │   └── ejecutar_3.sh    → script que compila y corre el ejercicio
 │
-└── ejercicio_4/
-    ├── flex.l
-    ├── bison.y
-    └── ejecutar_4.sh
+├── ejercicio_4/
+|   ├── flex.l
+|   ├── bison.y
+|   └── ejecutar_4.sh
+|
+└── ejercicio_5/
+|   ├── fb1-5.l
+|   ├── fb1-5.tab.c
+|   ├── fb1-5.tab.h
+|   ├── fb1-5.y
+|   └── lex.yy.c
 ```
 
 Cada carpeta es independiente: trae su propio `flex.l`, `bison.y` y script de compilación, así que se pueden compilar y correr por separado.
@@ -315,3 +333,117 @@ Mystery character @
 
 ---
 
+## Ejercicio 5
+
+Se implementa una calculadora real: a diferencia de los ejercicios 3 y 4, donde *bison.y* solo identificaba y describía tokens, acá construye una gramática que calcula el resultado de una expresión aritmética con suma, resta, multiplicación, división y valor absoluto, respetando la jerarquía de operaciones.
+
+### `fb1-5.l`
+
+**Bloque 1 - Encabezado**
+```c
+%{
+#include "fb1-5.tab.h"
+%}
+
+%option noyywrap
+```
+Incluye *fb1-5.tab.h*, el header que genera *bison -d* con las constantes de los tokens *(ADD, NUMBER, etc.)*, para que *fb1-5.l* y *fb1-5.y* usen exactamente los mismos nombres. *%option noyywrap* evita tener que definir la función *yywrap()*, ya que solo se procesa una entrada.
+
+**Bloque 2 - Reglas de reconocimiento**
+```c
+%%
+"+"      { return ADD; }
+"-"      { return SUB; }
+"*"      { return MUL; }
+"/"      { return DIV; }
+"|"      { return ABS; }
+[0-9]+   { yylval = atoi(yytext); return NUMBER; }
+\n       { return EOL; }
+[ \t]    { /* ignorar espacios */ }
+.        { yyerror("carácter desconocido"); }
+%%
+```
+Los primeros 5 patrones son literales: cada operador matchea un solo carácter y devuelve su token correspondiente.
+- *[0-9]+* reconoce uno o más dígitos seguidos, los convierte directamente a entero con *atoi()* y guarda el valor en *yylval* para que *bison.y* pueda usarlo como *$$*.
+- *\n* devuelve *EOL* (end of line), que en la gramática marca el final de una expresión.
+- *[ \t]* descarta espacios y tabulaciones sin devolver nada.
+- *.* es la regla "atrapa todo": cualquier carácter no reconocido (letras, símbolos raros, etc.) dispara un error de sintaxis en vez de tratarse como un token válido, a diferencia del ejercicio 3 donde se devolvía como *MYSTERY*.
+
+### `fb1-5.y`
+
+**Bloque 1 - Declaración de tockens**
+```c
+%{
+#include <stdio.h>
+%}
+
+%token NUMBER
+%token ADD SUB MUL DIV ABS
+%token EOL
+```
+No hace falta *%union* acá porque todos los símbolos (tokens y no terminales) manejan el mismo tipo de valor: un *int*, que es el tipo por defecto de *$$/$1/$2...*x cuando no se declara ninguna unión.
+
+**Bloque 2 - Gramática y acciones**
+```c
+%%
+calclist:
+	/* vacío */
+	| calclist exp EOL { printf("= %d\n", $2); }
+	;
+
+exp: factor
+	| exp ADD factor { $$ = $1 + $3; }
+	| exp SUB factor { $$ = $1 - $3; }
+	;
+
+factor: term
+	| factor MUL term { $$ = $1 * $3; }
+	| factor DIV term { $$ = $1 / $3; }
+	;
+
+term: NUMBER
+	| ABS term { $$ = $2 >= 0 ? $2 : -$2; }
+	;
+%%
+```
+La gramática está organizada en niveles de precedencia, de menor a mayor, cada uno delegando en el siguiente cuando no aplica su propio operador:
+- *calclist* es la regla recursiva de siempre para "cero o más elementos": puede estar vacía, o ser *calclist* seguido de una expresión más terminada en *EOL*. Es importante notar que en *calclist exp EOL*, los símbolos son *$1 = calclist*, *$2 = exp* y *$3 = EOL*; por eso la acción imprime *$2* (el valor de la expresión), no *$1*.
+- *exp* maneja suma y resta. Si no hay *+* ni *-*, un *exp* es simplemente un factor (regla *exp: factor*), y como no se escribe ninguna acción explícita, Bison aplica por defecto *$$ = $1*.
+- *factor* maneja multiplicación y división, de la misma forma que *exp* maneja suma y resta.
+- *term* es el nivel más profundo: o es directamente un *NUMBER*, o es un *ABS* term, que calcula el valor absoluto del término ($2 porque ABS es $1 y term es $2).
+Al anidar *exp → factor → term*, la gramática obliga a resolver primero las multiplicaciones/divisiones y los valores absolutos antes que las sumas/restas, sin necesidad de declarar precedencias con *%left* / *%right*.
+
+**Bloque 3 - *main* y manejo de errores**
+```c
+main(int argc, char **argv)
+{
+	yyparse();
+}
+
+yyerror(char *s)
+{
+	fprintf(stderr, "error: %s\n", s);
+}
+```
+Simplemente arranca el análisis con *yyparse()*, que internamente pide tokens a *yylex()* cada vez que los necesita. *yyerror* la invoca Bison automáticamente cuando la entrada no calza con ninguna regla de la gramática (por ejemplo, un carácter desconocido detectado en el escáner).
+
+### Compilación (uno por uno)
+```c
+bison -d fb1-5.y
+flex fb1-5.l
+gcc fb1-5.tab.c lex.yy.c -o calc -lfl
+```
+
+### Ejemplo
+- Entrada: *1 * 2 + 3 * 4 + 5*
+- Salida: *= 19*
+El cálculo respeta la precedencia esperada: *(1⋅2) + (3⋅4) + 5 = 2 + 12 + 5 = 19.*
+
+<img width="304" height="92" alt="Screenshot 2026-08-17 213111" src="https://github.com/user-attachments/assets/99a82669-17e8-4e94-bc35-a0e68c4ed92e" />
+
+---
+
+#### Integrantes
+- David Avendaño
+- Brayan Paredes
+- Laura Niño
